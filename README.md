@@ -1,0 +1,2 @@
+# genericser
+go generate generics
