@@ -1,0 +1,476 @@
+package: package
+IDENT: perllist
+;: 
+
+COMMENT: // base type
+type: type
+IDENT: T
+=: 
+IDENT: int
+;: 
+
+COMMENT: // L contains a slice of T values
+type: type
+IDENT: L
+struct: struct
+{: 
+IDENT: elements
+[: 
+]: 
+IDENT: T
+;: 
+
+IDENT: first
+IDENT: T
+;: 
+
+}: 
+;: 
+
+COMMENT: // NewL creates a new List of T values
+COMMENT: // with optional initial values
+func: func
+IDENT: NewL
+(: 
+IDENT: values
+...: 
+IDENT: T
+): 
+*: 
+IDENT: L
+{: 
+return: return
+&: 
+IDENT: L
+{: 
+IDENT: values
+}: 
+;: 
+
+}: 
+;: 
+
+COMMENT: // Len returns the length of the underlying slice
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Len
+(: 
+): 
+IDENT: int
+{: 
+return: return
+IDENT: len
+(: 
+IDENT: l
+.: 
+IDENT: elements
+): 
+;: 
+
+}: 
+;: 
+
+COMMENT: // Push appends an element at the end of the list
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Push
+(: 
+IDENT: element
+IDENT: T
+): 
+{: 
+IDENT: l
+.: 
+IDENT: elements
+=: 
+IDENT: append
+(: 
+IDENT: l
+.: 
+IDENT: elements
+,: 
+IDENT: element
+): 
+;: 
+
+}: 
+;: 
+
+COMMENT: // Unshift adds an element at the beginning of the list
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Unshift
+(: 
+IDENT: element
+IDENT: T
+): 
+{: 
+IDENT: newl
+:=: 
+IDENT: append
+(: 
+[: 
+]: 
+IDENT: T
+{: 
+IDENT: element
+}: 
+,: 
+IDENT: l
+.: 
+IDENT: elements
+...: 
+): 
+;: 
+
+IDENT: l
+.: 
+IDENT: elements
+=: 
+IDENT: newl
+;: 
+
+}: 
+;: 
+
+COMMENT: // Shift returns the first element and removes it from the list
+COMMENT: // returns zero value if list is empty
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Shift
+(: 
+): 
+IDENT: T
+{: 
+if: if
+IDENT: len
+(: 
+IDENT: l
+.: 
+IDENT: elements
+): 
+==: 
+INT: 0
+{: 
+return: return
+*: 
+IDENT: new
+(: 
+IDENT: T
+): 
+;: 
+
+}: 
+;: 
+
+IDENT: first
+:=: 
+IDENT: l
+.: 
+IDENT: elements
+[: 
+INT: 0
+]: 
+;: 
+
+IDENT: l
+.: 
+IDENT: elements
+=: 
+IDENT: l
+.: 
+IDENT: elements
+[: 
+INT: 1
+:: 
+]: 
+;: 
+
+return: return
+IDENT: first
+;: 
+
+}: 
+;: 
+
+COMMENT: // Pop returns the last element and removes it from the list
+COMMENT: // returns zero value if list is empty
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Pop
+(: 
+): 
+IDENT: T
+{: 
+if: if
+IDENT: len
+(: 
+IDENT: l
+.: 
+IDENT: elements
+): 
+==: 
+INT: 0
+{: 
+return: return
+*: 
+IDENT: new
+(: 
+IDENT: T
+): 
+;: 
+
+}: 
+;: 
+
+IDENT: lastIndex
+:=: 
+IDENT: len
+(: 
+IDENT: l
+.: 
+IDENT: elements
+): 
+-: 
+INT: 1
+;: 
+
+IDENT: last
+:=: 
+IDENT: l
+.: 
+IDENT: elements
+[: 
+IDENT: lastIndex
+]: 
+;: 
+
+IDENT: l
+.: 
+IDENT: elements
+=: 
+IDENT: l
+.: 
+IDENT: elements
+[: 
+:: 
+IDENT: lastIndex
+]: 
+;: 
+
+return: return
+IDENT: last
+;: 
+
+}: 
+;: 
+
+COMMENT: // Foreach iterates over the slice by calling the given function
+COMMENT: // providing the slice index and the value
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Foreach
+(: 
+IDENT: f
+func: func
+(: 
+IDENT: int
+,: 
+IDENT: T
+): 
+): 
+{: 
+for: for
+IDENT: index
+,: 
+IDENT: value
+:=: 
+range: range
+IDENT: l
+.: 
+IDENT: elements
+{: 
+IDENT: f
+(: 
+IDENT: index
+,: 
+IDENT: value
+): 
+;: 
+
+}: 
+;: 
+
+}: 
+;: 
+
+COMMENT: // Grep iterates over the slice by calling the given function
+COMMENT: // providing the slice index and the value
+COMMENT: // and returning a new List that contains all element where
+COMMENT: // the given function returned true
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Grep
+(: 
+IDENT: f
+func: func
+(: 
+IDENT: int
+,: 
+IDENT: T
+): 
+IDENT: bool
+): 
+IDENT: L
+{: 
+IDENT: result
+:=: 
+IDENT: L
+{: 
+}: 
+;: 
+
+for: for
+IDENT: index
+,: 
+IDENT: value
+:=: 
+range: range
+IDENT: l
+.: 
+IDENT: elements
+{: 
+if: if
+IDENT: f
+(: 
+IDENT: index
+,: 
+IDENT: value
+): 
+{: 
+IDENT: result
+.: 
+IDENT: elements
+=: 
+IDENT: append
+(: 
+IDENT: result
+.: 
+IDENT: elements
+,: 
+IDENT: value
+): 
+;: 
+
+}: 
+;: 
+
+}: 
+;: 
+
+return: return
+IDENT: result
+;: 
+
+}: 
+;: 
+
+COMMENT: // Map iterates over the slice by calling the given function
+COMMENT: // providing the slice index and the value
+COMMENT: // and returning a new List that contains all element
+COMMENT: // with the value returned by the function
+func: func
+(: 
+IDENT: l
+*: 
+IDENT: L
+): 
+IDENT: Map
+(: 
+IDENT: f
+func: func
+(: 
+IDENT: int
+,: 
+IDENT: T
+): 
+IDENT: T
+): 
+IDENT: L
+{: 
+IDENT: result
+:=: 
+IDENT: L
+{: 
+}: 
+;: 
+
+for: for
+IDENT: index
+,: 
+IDENT: value
+:=: 
+range: range
+IDENT: l
+.: 
+IDENT: elements
+{: 
+IDENT: result
+.: 
+IDENT: elements
+=: 
+IDENT: append
+(: 
+IDENT: result
+.: 
+IDENT: elements
+,: 
+IDENT: f
+(: 
+IDENT: index
+,: 
+IDENT: value
+): 
+): 
+;: 
+
+}: 
+;: 
+
+return: return
+IDENT: result
+;: 
+
+}: 
+;: 
+
+PASS
+ok  	github.com/jochenczemmel/genericser/convert	0.005s
